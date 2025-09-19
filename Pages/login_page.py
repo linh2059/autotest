@@ -23,6 +23,7 @@ class LoginPage(BasePage):
             lambda d: self.get_visible_element((By.XPATH, "//button[contains(text(),'Đăng nhập')]"))
         )
         login_button.click()
+        # demo
 
         # Đợi chuyển đến trang quản lý lớp học
         self.wait.until(EC.url_to_be("https://school-beta.edulive.net/giao-vien/quan-ly-lop-hoc"))
