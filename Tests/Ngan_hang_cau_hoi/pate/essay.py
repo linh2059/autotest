@@ -19,8 +19,9 @@ def go_to_question_bank(driver):
 def open_add_topic_modal(driver):
     wait = WebDriverWait(driver, 20)
     driver.execute_script("arguments[0].click();", wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Tạo câu hỏi mới')]"))))
-    driver.execute_script("arguments[0].click();", wait.until(EC.element_to_be_clickable((By.XPATH, "//p[@class='text-sm']"))))
     print("✅ Mở modal tạo câu hỏi mới")
+    driver.execute_script("arguments[0].click();", wait.until(EC.element_to_be_clickable((By.XPATH, "//p[@class='text-sm']"))))
+    print("✅ Click chọn chủ đề")
 
 def select_parent_option(driver, parent_title):
     wait = WebDriverWait(driver, 20)

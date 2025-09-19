@@ -6,7 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from Pages.login_page import LoginPage
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import TimeoutException
-from Pages.utils import get_wait
+from Pages.utils import get_wait, demo_pause
 
 
 
@@ -16,25 +16,28 @@ def go_to_question_bank(driver):
     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", menu)
     driver.execute_script("arguments[0].click();", menu)
     wait.until(EC.url_to_be("https://school-beta.edulive.net/giao-vien/ngan-hang-cau-hoi"))
+    demo_pause()   # dừng trước click
     print("✅ Vào trang Ngân hàng câu hỏi")
 
 def open_add_topic_modal(driver):
     wait = get_wait(driver)
     driver.execute_script("arguments[0].click();", wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Tạo câu hỏi mới')]"))))
     driver.execute_script("arguments[0].click();", wait.until(EC.element_to_be_clickable((By.XPATH, "//p[@class='text-sm']"))))
+    demo_pause()   # dừng trước click
     print("✅ Mở modal tạo câu hỏi mới")
 
 def select_parent_option(driver, parent_title):
     wait = get_wait(driver)
     parent_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, f"button[title='{parent_title}']")))
     driver.execute_script("arguments[0].click();", parent_btn)
-    time.sleep(1)
+    demo_pause()
     print(f"✅ Chọn chủ đề cha: {parent_title}")
 
 def chon_muc_do(driver, level: int):
     wait = get_wait(driver)
     button = wait.until(EC.element_to_be_clickable((By.XPATH, f"(//div[contains(@class,'col-span-1 flex flex-col gap-1.5')]//button)[{level}]")))
     driver.execute_script("arguments[0].click();", button)
+    demo_pause()
     print(f"✅ Chọn mức độ {level}")
 
 def choose_question_type(driver, option_text):
@@ -51,6 +54,7 @@ def choose_question_type(driver, option_text):
     
     # 3️⃣ Optional: verify giá trị đã chọn
     selected = select.first_selected_option.text
+    demo_pause()
     print(f"✅ Đã chọn dạng câu hỏi: {selected}")
 
 
@@ -67,6 +71,7 @@ def cau_hoi(driver, question: str):
     driver.execute_script("arguments[0].scrollIntoView(true);", q_input)
     q_input.clear()
     q_input.send_keys(question)
+    demo_pause()
     print(f"✅ Nhập câu hỏi: {question}")
 
 def upload_file(driver, file_path: str):
@@ -87,6 +92,7 @@ def nhap_dap_an_flex(driver, answers: list[str]):
         ans_input = wait.until(EC.element_to_be_clickable((By.XPATH, input_xpath)))
         ans_input.clear()
         ans_input.send_keys(ans)
+        demo_pause()   # dừng trước click
         print(f"✅ Nhập đáp án {i}: {ans}")
         if i == 10:
             print("⚠️ Đạt tối đa 10 đáp án")

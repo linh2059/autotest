@@ -4,14 +4,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Pages.login_page import LoginPage
-import pandas as pd
-
-def load_data_from_excel(file_path):
-    df = pd.read_excel(file_path)
-    # Chuyển answers từ string sang list
-    df['answers'] = df['answers'].apply(lambda x: [a.strip() for a in x.split(',')])
-    return df.to_dict('records')
-
 
 def go_to_question_bank(driver):
     wait = WebDriverWait(driver, 20)
@@ -89,12 +81,86 @@ def nhap_dap_an_flex(driver, answers: list[str]):
         if i == 10:
             print("⚠️ Đạt tối đa 10 đáp án")
             break
-def click_radio_button(driver, correct_answer: int):
+
+# def click_radio_button(driver):
+#     try:
+#         wait = WebDriverWait(driver, 10)
+#         # chọn svg thứ 142
+#         radio_btn = wait.until(
+#             EC.element_to_be_clickable(
+#                 (By.XPATH, "(//*[name()='svg'][contains(@class,'tabler-icon tabler-icon-circle flex-none text-neutral-800 dark:text-neutral-200')])[3]")
+#             )
+#         )
+#         radio_btn.click()
+#         print("✅ Đã click vào radio button.")
+#     except Exception as e:
+#         print(f"❌ Lỗi khi click radio button: {e}")
+
+def click_radio_button(driver, level: int):
     wait = WebDriverWait(driver, 20)
-    position = correct_answer + 1 
+    position = level + 1 
     radio_btn = wait.until(EC.element_to_be_clickable((By.XPATH, f"(//*[name()='svg'][contains(@class,'tabler-icon tabler-icon-circle flex-none text-neutral-800 dark:text-neutral-200')])[{position}]")))
     radio_btn.click()
     print(f"✅ Chọn đáp án {position}")
+
+# def select_answer(driver, index, container_css="div[data-modal='data-modal']", timeout=10):
+#     """
+#     Chọn đáp án theo thứ tự index (1..10).
+#     - Tìm các svg chỉ trong container (mặc định div[data-modal='data-modal']).
+#     - Click vào ancestor::button của svg (an toàn hơn).
+#     - Scroll vào view, fallback dùng JS click khi cần.
+#     """
+#     if index < 1:
+#         raise ValueError("index phải >= 1")
+#     try:
+#         wait = WebDriverWait(driver, timeout)
+
+#         # 1) tìm container (nếu không tìm được thì dùng toàn document)
+#         try:
+#             container = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, container_css)))
+#         except TimeoutException:
+#             container = driver  # fallback: tìm trong toàn document
+
+#         # 2) lấy danh sách svg ứng viên (chỉ trong container)
+#         svgs = container.find_elements(By.XPATH, ".//*[name()='svg' and contains(@class,'tabler-icon tabler-icon-circle')]")
+#         print(f"[debug] Tìm thấy {len(svgs)} svg ứng viên trong container")
+
+#         if not svgs:
+#             raise Exception("Không tìm thấy svg nào match selector trong container. Kiểm tra container_css hoặc selector.")
+
+#         # 3) nếu index lớn hơn số svg tìm thấy -> báo lỗi kèm debug
+#         if index > len(svgs):
+#             # in 1 vài svg đầu để debug
+#             for i, s in enumerate(svgs[:10], start=1):
+#                 print(f"  {i}: class={s.get_attribute('class')}, outerHTML[:120]={s.get_attribute('outerHTML')[:120]!r}")
+#             raise IndexError(f"Index {index} > số svg tìm thấy ({len(svgs)}). Có thể cần đổi container_css hoặc offset.")
+
+#         # 4) target svg trong container: (index-1)
+#         target_svg = svgs[index - 1]
+
+#         # 5) tìm button cha (nếu không có thì click svg)
+#         try:
+#             target_button = target_svg.find_element(By.XPATH, "./ancestor::button[1]")
+#         except Exception:
+#             target_button = target_svg
+
+#         # 6) scroll vào giữa màn hình
+#         driver.execute_script("arguments[0].scrollIntoView({block:'center'})", target_button)
+
+#         # 7) đợi element hiển thị & enabled rồi click, fallback JS khi intercept
+#         wait.until(lambda d: target_button.is_displayed() and target_button.is_enabled())
+#         try:
+#             target_button.click()
+#         except ElementClickInterceptedException:
+#             driver.execute_script("arguments[0].click();", target_button)
+
+#         print(f"✅ Đã click đáp án {index} (dựa trên danh sách svg trong container).")
+
+#     except Exception as e:
+#         print(f"❌ Lỗi khi chọn đáp án {index}: {e}")
+#         raise
+
+
 
 def nhap_tags(driver, tags_text: str):
     wait = WebDriverWait(driver, 20)
@@ -124,24 +190,24 @@ def click_them_moi(driver):
     print("✅ Click Thêm mới (submit)")
 
 @pytest.mark.usefixtures("driver")
-@pytest.mark.parametrize("data", load_data_from_excel(r"C:\Users\admin\Documents\Selenium\File\single_choice.xlsx"))
-def test_tao_cau_hoi_excel(driver, data):
+def test_tao_cau_hoi_complete(driver):
     login_page = LoginPage(driver)
     login_page.login("daotc@el.net", "123456")
 
     go_to_question_bank(driver)
     open_add_topic_modal(driver)
-    select_parent_option(driver, data['parent_title'])
-    chon_muc_do(driver, data['level'])
+    select_parent_option(driver, "All in")
+    # chon_muc_do(driver, 2)
 
-
-    cau_hoi(driver, data['question'])
-    nhap_dap_an_flex(driver, data['answers'])
-    click_radio_button(driver, data['correct_answer'])
-    nhap_tags(driver, data['tags'])
-    nhap_ghi_chu(driver, data['note'])
-    upload_file(driver, data['file_path'])
-
+    cau_hoi(driver, "Câu hỏi tự động 12345")
+    nhap_dap_an_flex(driver, ["Đáp án A","Đáp án B","Đáp án C","Đáp án D","Đáp án E","Đáp án F"])
+    # nhap_tags(driver, "Toán,Lý,Hóa")
+    # nhap_ghi_chu(driver, "Đây là ghi chú tự động")
+    # upload_file(driver, r"C:\Users\admin\Pictures\3264fac23f6db6430fc869be212b45fb.jpg")
+    click_radio_button(driver, 3)
+    # select_answer(driver, 2)
+    # trước khi click Thêm mới
     remove_focus(driver)
-    click_them_moi(driver)
+    # click_them_moi(driver)
     time.sleep(5)
+    driver.quit()

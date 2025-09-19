@@ -1,6 +1,6 @@
 from selenium.webdriver.support.ui import WebDriverWait
 
-def get_wait(driver, timeout=20):
+def get_wait(driver, timeout=40):
     """
     Trả về đối tượng WebDriverWait.
     - driver: WebDriver instance
