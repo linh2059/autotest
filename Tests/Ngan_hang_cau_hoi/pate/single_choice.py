@@ -4,6 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Pages.login_page import LoginPage
+from Pages.utils import get_wait, demo_pause
 
 def go_to_question_bank(driver):
     wait = WebDriverWait(driver, 20)

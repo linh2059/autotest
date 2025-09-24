@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from Pages.login_page import LoginPage
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import TimeoutException
+from Pages.utils import get_wait, demo_pause
 
 
 def go_to_question_bank(driver):

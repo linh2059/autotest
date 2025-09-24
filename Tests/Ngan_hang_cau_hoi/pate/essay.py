@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from Pages.login_page import LoginPage
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import TimeoutException
+from Pages.utils import get_wait, demo_pause
 
 
 def go_to_question_bank(driver):
@@ -14,12 +15,14 @@ def go_to_question_bank(driver):
     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", menu)
     driver.execute_script("arguments[0].click();", menu)
     wait.until(EC.url_to_be("https://school-beta.edulive.net/giao-vien/ngan-hang-cau-hoi"))
+    demo_pause() 
     print("✅ Vào trang Ngân hàng câu hỏi")
 
 def open_add_topic_modal(driver):
     wait = WebDriverWait(driver, 20)
     driver.execute_script("arguments[0].click();", wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Tạo câu hỏi mới')]"))))
     print("✅ Mở modal tạo câu hỏi mới")
+    demo_pause() 
     driver.execute_script("arguments[0].click();", wait.until(EC.element_to_be_clickable((By.XPATH, "//p[@class='text-sm']"))))
     print("✅ Click chọn chủ đề")
 
@@ -27,6 +30,7 @@ def select_parent_option(driver, parent_title):
     wait = WebDriverWait(driver, 20)
     parent_btn = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, f"button[title='{parent_title}']")))
     driver.execute_script("arguments[0].click();", parent_btn)
+    demo_pause() 
     time.sleep(1)
     print(f"✅ Chọn chủ đề cha: {parent_title}")
 
@@ -34,6 +38,7 @@ def chon_muc_do(driver, level: int):
     wait = WebDriverWait(driver, 20)
     button = wait.until(EC.element_to_be_clickable((By.XPATH, f"(//div[contains(@class,'col-span-1 flex flex-col gap-1.5')]//button)[{level}]")))
     driver.execute_script("arguments[0].click();", button)
+    demo_pause() 
     print(f"✅ Chọn mức độ {level}")
 
 def choose_question_type(driver, option_text):

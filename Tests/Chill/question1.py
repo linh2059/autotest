@@ -5,7 +5,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Pages.login_page import LoginPage
 from selenium.common.exceptions import TimeoutException
-from Pages.utils import get_wait, demo_pause
 
 
 ## Hàm vào trang Ngân hàng câu hỏi
@@ -15,14 +14,12 @@ def go_to_question_bank(driver):
     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", menu)
     driver.execute_script("arguments[0].click();", menu)
     wait.until(EC.url_to_be("https://school-beta.edulive.net/giao-vien/ngan-hang-cau-hoi"))
-    demo_pause() 
     print("✅ Vào trang Ngân hàng câu hỏi")
 
 ## Hàm mở modal tạo câu hỏi mới
 def open_add_topic_modal(driver):
     wait = WebDriverWait(driver, 20)
     driver.execute_script("arguments[0].click();", wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Tạo câu hỏi mới')]"))))
-    demo_pause() 
     print("✅ Mở modal tạo câu hỏi mới")
 
 ## Hàm mở modal chọn chủ đề
@@ -30,7 +27,6 @@ def open_topic_modal(driver):
     wait = WebDriverWait(driver, 20)
     driver.execute_script("arguments[0].click();", wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Tạo câu hỏi mới')]"))))
     driver.execute_script("arguments[0].click();", wait.until(EC.element_to_be_clickable((By.XPATH, "//p[@class='text-sm']"))))
-    demo_pause() 
     print("✅ Click chọn chủ đề")
 
 ## Hàm chọn chủ đề theo đường dẫn
@@ -73,7 +69,6 @@ def select_topic(driver, path, timeout=15):
         EC.element_to_be_clickable((By.XPATH, f"//button[@title='{final_topic}']"))
     )
     driver.execute_script("arguments[0].click();", final_btn)
-    demo_pause() 
     print(f"🎯 Đã chọn chủ đề: {final_topic}")
 
 ## Hàm chuyển sang kiểu đáp án image 
@@ -92,7 +87,6 @@ def chuyen_sang_dap_an_image_js(driver):
         var evt = new MouseEvent('click', {view: window, bubbles: true, cancelable: true});
         btn.dispatchEvent(evt);
     """, image_btn)
-    demo_pause() 
 
     print("✅ Chuyển sang kiểu đáp án: image (JS click)")
 
@@ -101,7 +95,6 @@ def upload_file(driver, file_path: str):
     wait = WebDriverWait(driver, 20)
     file_input = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, "input[type='file']")))
     file_input.send_keys(file_path)
-    demo_pause() 
     print(f"✅ Upload file: {file_path}")
 
 ## Hàm upload ảnh cho từng đáp án
@@ -124,7 +117,6 @@ def upload_images(driver, answers):
 
         driver.execute_script("arguments[0].style.display='block';", input_elem)
         input_elem.send_keys(file_path)
-        demo_pause() 
 
         print(f"✅ Upload file '{file_path}' vào đáp án {i}")
 
@@ -133,7 +125,6 @@ def chon_muc_do(driver, level: int):
     wait = WebDriverWait(driver, 20)
     button = wait.until(EC.element_to_be_clickable((By.XPATH, f"(//div[contains(@class,'col-span-1 flex flex-col gap-1.5')]//button)[{level}]")))
     driver.execute_script("arguments[0].click();", button)
-    demo_pause() 
     print(f"✅ Chọn mức độ {level}")
 
 ## Hàm nhập câu hỏi
@@ -143,7 +134,6 @@ def cau_hoi(driver, question: str):
     driver.execute_script("arguments[0].scrollIntoView(true);", q_input)
     q_input.clear()
     q_input.send_keys(question)
-    demo_pause() 
     print(f"✅ Nhập câu hỏi: {question}")
 
 ## Hàm nhập đáp án dạng text
@@ -155,12 +145,10 @@ def nhap_dap_an_flex(driver, answers: list[str]):
             driver.execute_script("arguments[0].click();", add_btn)
             time.sleep(0.5)
             print(f"✅ Click thêm đáp án thứ {i}")
-            demo_pause() 
         input_xpath = f"(//input[contains(@placeholder,'Nhập câu trả lời')])[{i}]"
         ans_input = wait.until(EC.element_to_be_clickable((By.XPATH, input_xpath)))
         ans_input.clear()
         ans_input.send_keys(ans)
-        demo_pause() 
         print(f"✅ Nhập đáp án {i}: {ans}")
         if i == 10:
             print("⚠️ Đạt tối đa 10 đáp án")
@@ -173,7 +161,6 @@ def click_radio_button_text(driver, level: int):
     position = level + 1 
     radio_btn = wait.until(EC.element_to_be_clickable((By.XPATH, f"(//*[name()='svg'][contains(@class,'tabler-icon tabler-icon-circle flex-none text-neutral-800 dark:text-neutral-200')])[{position}]")))
     radio_btn.click()
-    demo_pause() 
     print(f"✅ Chọn đáp án {position}")
 
 ## Hàm click chọn đáp án đúng (radio button) cho image type
@@ -182,7 +169,6 @@ def click_radio_button_image(driver, level: int):
     position = level + 4
     radio_btn = wait.until(EC.element_to_be_clickable((By.XPATH, f"(//*[name()='svg'][contains(@class,'tabler-icon tabler-icon-circle flex-none text-neutral-800 dark:text-neutral-200')])[{position}]")))
     radio_btn.click()
-    demo_pause() 
     print(f"✅ Chọn đáp án {position} làm đáp án đúng")
 
 ## Hàm nhập thẻ (tags)
@@ -191,7 +177,6 @@ def nhap_tags(driver, tags_text: str):
     tag_input = wait.until(EC.element_to_be_clickable((By.XPATH, "//input[@placeholder='Nhập thẻ (Ngăn cách bằng các dấu phẩy)']")))
     tag_input.clear()
     tag_input.send_keys(tags_text)
-    demo_pause() 
     print(f"✅ Nhập thẻ: {tags_text}")
 
 ## Hàm nhập ghi chú
@@ -200,7 +185,6 @@ def nhap_ghi_chu(driver, note_text: str):
     note_input = wait.until(EC.visibility_of_element_located((By.XPATH, "//textarea[@placeholder='Nhập ghi chú']")))
     note_input.clear()
     note_input.send_keys(note_text)
-    demo_pause() 
     print(f"✅ Nhập ghi chú: {note_text}")
 
 ## Hàm bỏ focus khỏi input/textarea
@@ -216,7 +200,6 @@ def click_them_moi(driver):
     wait = WebDriverWait(driver, 20)
     btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Thêm mới')]")))
     driver.execute_script("arguments[0].click();", btn)
-    demo_pause() 
     print("✅ Click Thêm mới (submit)")
 
 @pytest.mark.usefixtures("driver")

@@ -1,11 +1,14 @@
 import pytest
 import time
+import pandas as pd
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Pages.login_page import LoginPage
 from selenium.common.exceptions import TimeoutException
+from Pages.utils import read_test_data   # import hàm đọc Excel
 from Pages.utils import get_wait, demo_pause
+
 
 
 ## Hàm vào trang Ngân hàng câu hỏi
@@ -63,6 +66,7 @@ def select_topic(driver, path, timeout=15):
             aria_expanded = dropdown_btn.get_attribute("aria-expanded")
             if not aria_expanded or aria_expanded == "false":
                 driver.execute_script("arguments[0].click();", dropdown_btn)
+                demo_pause() 
                 print(f"✅ Đã mở dropdown của: {parent}")
         except Exception as e:
             raise Exception(f"❌ Không tìm thấy hoặc không click được dropdown '{parent}'") from e
@@ -154,8 +158,8 @@ def nhap_dap_an_flex(driver, answers: list[str]):
             add_btn = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Thêm câu trả lời')]")))
             driver.execute_script("arguments[0].click();", add_btn)
             time.sleep(0.5)
-            print(f"✅ Click thêm đáp án thứ {i}")
             demo_pause() 
+            print(f"✅ Click thêm đáp án thứ {i}")
         input_xpath = f"(//input[contains(@placeholder,'Nhập câu trả lời')])[{i}]"
         ans_input = wait.until(EC.element_to_be_clickable((By.XPATH, input_xpath)))
         ans_input.clear()
@@ -209,6 +213,7 @@ def remove_focus(driver):
     Bỏ focus khỏi input/textarea trước khi submit.
     """
     driver.execute_script("document.activeElement.blur();")
+    demo_pause() 
     print("✅ Đã bỏ focus khỏi input")
 
 ## Hàm click Thêm mới (submit)
@@ -219,72 +224,55 @@ def click_them_moi(driver):
     demo_pause() 
     print("✅ Click Thêm mới (submit)")
 
-@pytest.mark.usefixtures("driver")
-def test_tao_cau_hoi_complete(driver):
-    # Initialize and login
+
+# --- Load data từ Excel ---
+def load_data_from_excel(file_path):
+    df = pd.read_excel(file_path)
+
+    # Convert answers từ chuỗi "A,B,C,D" sang list
+    if "answers" in df.columns:
+        df["answers"] = df["answers"].apply(
+            lambda x: [a.strip() for a in str(x).split(",")]
+        )
+
+    return df.to_dict("records")
+
+
+# --- Parametrize từ Excel ---
+@pytest.mark.parametrize(
+    "case",
+    load_data_from_excel(r"C:\Users\admin\Documents\Selenium\File\single_choice1.xlsx")
+)
+def test_tao_cau_hoi_excel(driver, case):
     login_page = LoginPage(driver)
     login_page.login("daotc@el.net", "123456")
 
-    #Vào trang Ngân hàng câu hỏi
     go_to_question_bank(driver)
-
-    ## Mở modal tạo câu hỏi mới
     open_add_topic_modal(driver)
-
-    ## Mở modal chọn chủ đề
     open_topic_modal(driver)
-    
-    # chon_muc_do(driver, 2)
+    select_topic(driver, case["topic_path"])
 
-    # Case 1: Chủ đề có nhiều cấp
-    select_topic(driver, "All in -> Có file đính kèm -> file doc")
-    # Case 2: Chủ đề chỉ 1 cấp
-    # select_topic(driver, "Chủ đề auto")
-
-    
-    # cau_hoi(driver, "Câu hỏi tự động 12345")
-    # nhap_tags(driver, "Toán,Lý,Hóa")
-    # nhap_ghi_chu(driver, "Đây là ghi chú tự động")
-
-    ##Thêm tệp đính kèm chung cho câu hỏi
-    upload_file(driver, r"C:\Users\admin\Pictures\3264fac23f6db6430fc869be212b45fb.jpg")
-
-
-     # 🟢 Chọn type = "image" hoặc "text"
-    answer_type = "image"   # đổi thành "text" nếu muốn
+    upload_file(driver, case["attach_file"])
 
     try:
-        if answer_type == "image":
+        if case["answer_type"] == "image":
             chuyen_sang_dap_an_image_js(driver)
+            upload_images(driver, case["answers"])
+            click_radio_button_image(driver, int(case["correct_index"]))
 
-            answers = [
-                r"C:\Users\admin\Pictures\Screenshot_1.png",
-                r"C:\Users\admin\Pictures\Screenshot_2.png",
-                r"C:\Users\admin\Pictures\Screenshot_1.png",
-                r"C:\Users\admin\Pictures\Screenshot_2.png",
-                r"C:\Users\admin\Pictures\Screenshot_1.png",
-            ]
-            upload_images(driver, answers)
-            click_radio_button_image(driver, 3)
-
-        elif answer_type == "text":
-            nhap_dap_an_flex(driver, [
-                "Đáp án A", "Đáp án B", "Đáp án C",
-                "Đáp án D", "Đáp án E", "Đáp án F"
-            ])
-            click_radio_button_text(driver, 3)
+        elif case["answer_type"] == "text":
+            nhap_dap_an_flex(driver, case["answers"])
+            click_radio_button_text(driver, int(case["correct_index"]))
 
     except TimeoutException:
-        print(f"⚠️ {answer_type} mode không khả dụng")
+        pytest.fail(f"⚠️ {case['answer_type']} mode không khả dụng")
 
-    cau_hoi(driver, "Câu hỏi tự động 12345")
-    nhap_tags(driver, "Toán,Lý,Hóa")
-    nhap_ghi_chu(driver, "Đây là ghi chú tự động")
-    
+    cau_hoi(driver, case["question"])
+    nhap_tags(driver, case["tags"])
+    nhap_ghi_chu(driver, case["note"])
+
     remove_focus(driver)
     click_them_moi(driver)
-    
 
-
-    time.sleep(20)
+    time.sleep(5)
     driver.quit()
