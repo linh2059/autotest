@@ -11,7 +11,7 @@ from Pages.utils import get_wait, demo_pause
 ## Hàm vào trang Ngân hàng câu hỏi
 def go_to_question_bank(driver):
     wait = WebDriverWait(driver, 20)
-    menu = wait.until(EC.element_to_be_clickable((By.XPATH, "//p[normalize-space()='Ngân hàng câu hỏi']")))
+    menu = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[contains(text(),'Ngân hàng câu hỏi')]")))
     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", menu)
     driver.execute_script("arguments[0].click();", menu)
     wait.until(EC.url_to_be("https://school-beta.edulive.net/giao-vien/ngan-hang-cau-hoi"))
