@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="16.373" timestamp="2025-10-02T08:51:06.262850+07:00" hostname="DESKTOP-TCGMAOT"><testcase classname="Tests.Chill.add_chu_de" name="test_topic_validations" time="16.215"><failure message="selenium.common.exceptions.TimeoutException: Message: &#10;Stacktrace:&#10;&#09;GetHandleVerifier [0x0x7ff7c9ebfc95+79861]&#10;&#09;GetHandleVerifier [0x0x7ff7c9ebfcf0+79952]&#10;&#09;(No symbol) [0x0x7ff7c9c3cada]&#10;&#09;(No symbol) [0x0x7ff7c9c94457]&#10;&#09;(No symbol) [0x0x7ff7c9c9471c]&#10;&#09;(No symbol) [0x0x7ff7c9ce8217]&#10;&#09;(No symbol) [0x0x7ff7c9cbcb1f]&#10;&#09;(No symbol) [0x0x7ff7c9ce4f8b]&#10;&#09;(No symbol) [0x0x7ff7c9cbc8b3]&#10;&#09;(No symbol) [0x0x7ff7c9c85272]&#10;&#09;(No symbol) [0x0x7ff7c9c86043]&#10;&#09;GetHandleVerifier [0x0x7ff7ca17b9cd+2946349]&#10;&#09;GetHandleVerifier [0x0x7ff7ca175c4a+2922410]&#10;&#09;GetHandleVerifier [0x0x7ff7ca1959d7+3052855]&#10;&#09;GetHandleVerifier [0x0x7ff7c9edaa7e+189918]&#10;&#09;GetHandleVerifier [0x0x7ff7c9ee2a1f+222591]&#10;&#09;GetHandleVerifier [0x0x7ff7c9ec8ab4+116244]&#10;&#09;GetHandleVerifier [0x0x7ff7c9ec8c69+116681]&#10;&#09;GetHandleVerifier [0x0x7ff7c9eaf048+11176]&#10;&#09;BaseThreadInitThunk [0x0x7ffb594b7374+20]&#10;&#09;RtlUserThreadStart [0x0x7ffb5a9bcc91+33]">driver = &lt;selenium.webdriver.chrome.webdriver.WebDriver (session="a03ff72f47bf2b1d84404c98a7d998fd")&gt;
+
+    @pytest.mark.usefixtures("driver")
+    def test_topic_validations(driver):
+        login_page = LoginPage(driver)
+        login_page.login("daotc@el.net", "123456")
+        go_to_question_bank(driver)
+    
+        # --- TC1: Bỏ trống tên chủ đề ---
+        open_add_topic_modal(driver)
+        new_topic(driver, "")
+        submit_new_topic(driver)
+        msg1 = get_error_message(driver)
+        try:
+            assert msg1 == "Vui lòng nhập tên chủ đề"
+            print("✅ TC1 đã Pass")
+        except AssertionError:
+            print(f"❌ TC1 Fail: Expected 'Vui lòng nhập tên chủ đề' but got '{msg1}'")
+    
+        # --- TC2: Tên chủ đề dài hơn 255 ký tự ---
+        open_add_topic_modal(driver)
+        long_name = "A" * 256
+        new_topic(driver, long_name)
+        submit_new_topic(driver)
+        msg2 = get_error_message(driver)
+        try:
+            assert msg2 == "Tên chủ đề không nhập quá 255 ký tự"
+            print("✅ TC2 đã Pass")
+        except AssertionError:
+            print(f"❌ TC2 Fail: Expected 'Tên chủ đề không nhập quá 255 ký tự' but got '{msg2}'")
+    
+        # --- TC3: Tạo chủ đề thành công ---
+        open_add_topic_modal(driver)
+        long_name = "Chủ đề Selenium Test"
+        new_topic(driver, long_name)
+        submit_new_topic(driver)
+&gt;       msg2 = get_error_message(driver)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Tests\Chill\add_chu_de.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+Tests\Chill\add_chu_de.py:37: in get_error_message
+    error_el = wait.until(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;selenium.webdriver.support.wait.WebDriverWait (session="a03ff72f47bf2b1d84404c98a7d998fd")&gt;, method = &lt;function visibility_of_element_located.&lt;locals&gt;._predicate at 0x000001D23548EAC0&gt;, message = ''
+
+    def until(self, method: Callable[[D], Union[Literal[False], T]], message: str = "") -&gt; T:
+        """Wait until the method returns a value that is not False.
+    
+        Calls the method provided with the driver as an argument until the
+        return value does not evaluate to ``False``.
+    
+        Parameters:
+        -----------
+        method: callable(WebDriver)
+            - A callable object that takes a WebDriver instance as an argument.
+    
+        message: str
+            - Optional message for :exc:`TimeoutException`
+    
+        Return:
+        -------
+        object: T
+            - The result of the last call to `method`
+    
+        Raises:
+        -------
+        TimeoutException
+            - If 'method' does not return a truthy value within the WebDriverWait
+            object's timeout
+    
+        Example:
+        --------
+        &gt;&gt;&gt; from selenium.webdriver.common.by import By
+        &gt;&gt;&gt; from selenium.webdriver.support.ui import WebDriverWait
+        &gt;&gt;&gt; from selenium.webdriver.support import expected_conditions as EC
+    
+        # Wait until an element is visible on the page
+        &gt;&gt;&gt; wait = WebDriverWait(driver, 10)
+        &gt;&gt;&gt; element = wait.until(EC.visibility_of_element_located((By.ID, "exampleId")))
+        &gt;&gt;&gt; print(element.text)
+        """
+        screen = None
+        stacktrace = None
+    
+        end_time = time.monotonic() + self._timeout
+        while True:
+            try:
+                value = method(self._driver)
+                if value:
+                    return value
+            except self._ignored_exceptions as exc:
+                screen = getattr(exc, "screen", None)
+                stacktrace = getattr(exc, "stacktrace", None)
+            if time.monotonic() &gt; end_time:
+                break
+            time.sleep(self._poll)
+&gt;       raise TimeoutException(message, screen, stacktrace)
+E       selenium.common.exceptions.TimeoutException: Message: 
+E       Stacktrace:
+E       	GetHandleVerifier [0x0x7ff7c9ebfc95+79861]
+E       	GetHandleVerifier [0x0x7ff7c9ebfcf0+79952]
+E       	(No symbol) [0x0x7ff7c9c3cada]
+E       	(No symbol) [0x0x7ff7c9c94457]
+E       	(No symbol) [0x0x7ff7c9c9471c]
+E       	(No symbol) [0x0x7ff7c9ce8217]
+E       	(No symbol) [0x0x7ff7c9cbcb1f]
+E       	(No symbol) [0x0x7ff7c9ce4f8b]
+E       	(No symbol) [0x0x7ff7c9cbc8b3]
+E       	(No symbol) [0x0x7ff7c9c85272]
+E       	(No symbol) [0x0x7ff7c9c86043]
+E       	GetHandleVerifier [0x0x7ff7ca17b9cd+2946349]
+E       	GetHandleVerifier [0x0x7ff7ca175c4a+2922410]
+E       	GetHandleVerifier [0x0x7ff7ca1959d7+3052855]
+E       	GetHandleVerifier [0x0x7ff7c9edaa7e+189918]
+E       	GetHandleVerifier [0x0x7ff7c9ee2a1f+222591]
+E       	GetHandleVerifier [0x0x7ff7c9ec8ab4+116244]
+E       	GetHandleVerifier [0x0x7ff7c9ec8c69+116681]
+E       	GetHandleVerifier [0x0x7ff7c9eaf048+11176]
+E       	BaseThreadInitThunk [0x0x7ffb594b7374+20]
+E       	RtlUserThreadStart [0x0x7ffb5a9bcc91+33]
+
+..\..\..\AppData\Local\Programs\Python\Python313\Lib\site-packages\selenium\webdriver\support\wait.py:138: TimeoutException</failure></testcase></testsuite></testsuites>

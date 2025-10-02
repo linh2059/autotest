@@ -77,3 +77,4 @@ def test_debug_page(driver):
     
     # Đợi để có thể xem kết quả
     time.sleep(5)
+

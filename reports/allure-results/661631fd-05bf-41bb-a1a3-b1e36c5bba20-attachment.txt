@@ -1,0 +1,10 @@
+✅ Vào trang Ngân hàng câu hỏi
+✅ Đã click nút Thêm chủ đề
+✅ Đã click nút Lưu
+❌ TC1 Fail: Expected 'Vui lòng nhập tên chủ đề' but got 'Vui lòng nhập tên chủ đề'
+✅ Đã click nút Thêm chủ đề
+✅ Đã click nút Lưu
+❌ TC2 Fail: Expected 'Tên chủ đề không nhập quá 255 ký tự' but got 'Tên chủ đề không nhập quá 255 ký tự'
+✅ Đã click nút Thêm chủ đề
+✅ Đã click nút Lưu
+📸 Screenshot saved: screenshots/test_topic_validations.png
