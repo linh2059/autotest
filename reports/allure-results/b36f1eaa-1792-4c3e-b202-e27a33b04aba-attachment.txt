@@ -1,0 +1,3 @@
+✅ Vào trang Ngân hàng câu hỏi
+Tìm thấy nút xoá: 1
+✅ Đã click nút xoá đầu tiên (click bằng JS)

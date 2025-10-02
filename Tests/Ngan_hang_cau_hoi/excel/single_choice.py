@@ -15,12 +15,12 @@ def load_data_from_excel(file_path):
 
 def go_to_question_bank(driver):
     wait = WebDriverWait(driver, 20)
-    menu = wait.until(EC.element_to_be_clickable((By.XPATH, "//p[normalize-space()='Ngân hàng câu hỏi']")))
+    menu = wait.until(EC.element_to_be_clickable((By.XPATH, "//span[contains(text(),'Ngân hàng câu hỏi')]")))
     driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", menu)
     driver.execute_script("arguments[0].click();", menu)
     wait.until(EC.url_to_be("https://school-beta.edulive.net/giao-vien/ngan-hang-cau-hoi"))
     print("✅ Vào trang Ngân hàng câu hỏi")
-
+    
 def open_add_topic_modal(driver):
     wait = WebDriverWait(driver, 20)
     driver.execute_script("arguments[0].click();", wait.until(EC.element_to_be_clickable((By.XPATH, "//button[contains(text(),'Tạo câu hỏi mới')]"))))

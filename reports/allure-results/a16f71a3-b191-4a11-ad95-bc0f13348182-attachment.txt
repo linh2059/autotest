@@ -1,0 +1,4 @@
+✅ Vào trang Ngân hàng câu hỏi
+✅ Đã click nút Thêm chủ đề
+✅ Đã click nút Lưu
+📸 Screenshot saved: screenshots/test_add_topic.png
